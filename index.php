@@ -15,23 +15,26 @@
             $( "#menu" ).menu();
             });
             </script>
-        <style>
-            .ui-menu { width: 150px; }
-        </style>
     </head>
     <body>
-        <ul id="menu">
-            <li><a href="#">Skins</a>
+        <ul id="menu" class="menue1">
+            <li><a href="#">Skins -></a>
                 <ul>
-                    <li><a href="index.php?skins=cops">Cops</a></li>
-                    <li><a href="#">Girl</a></li>
-                    <li><a href="#">Terroristen</a></li>
-                </ul>    
+                    <li><a href="index.php?page=cops">Cops</a></li>
+                    <li><a href="index.php?page=girl">Girl</a></li>
+                    <li><a href="index.php?page=terroristen">Terroristen</a></li>
+                </ul>
             </li>
-            <li><a href="#">Terror</a></li>
-            <li><a href="#">Sonstiges</a></li>
             <li>
-            <a href="#">Delphi</a>
+                <a href="#">Cars</a>
+                <ul>
+                    <li><a href="index.php?page=terroristen">Bullet</a></li>
+                    <li><a href="#">Cheetah</a></li>
+                    <li><a href="#">Turismo</a></li>
+                </ul>
+            </li>
+            <li>
+            <a href="#">Sonstiges</a>
                 <ul>
                     <li class="ui-state-disabled"><a href="#">Ada</a></li>
                     <li><a href="#">Saarland</a></li>
@@ -61,16 +64,67 @@
                     <li><a href="#">Perch</a></li>
                 </ul>
             </li>
-            <li class="ui-state-disabled"><a href="#">Amesville</a></li>
         </ul>
-<?php 
+        <div class="center">
+            <div class="inhalt">
+<?php
 error_reporting(0);
-if ($_GET["skins"] == 'cops')
+if ($_GET["page"] == 'cops')
 {
-    echo 'Cop Skins';
+    echo '<h1>Cop Skins</h1>';
+    echo '
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    Inhalt <br />
+    ';
+}
+if ($_GET["page"] == 'girl')
+{
+    echo '<h1>Girl Skins</h1>';
+}
+if ($_GET["page"] == 'terroristen')
+{
+    echo '<h1>Terroristen Skins</h1>';
 }
 
 
- ?>
+
+?>
+            </div>
+        </div>
     </body>
 </html>
