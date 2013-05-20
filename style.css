@@ -6,12 +6,47 @@
 body {
 	font-family: "Trebuchet MS", "Helvetica", "Arial",  "Verdana", "sans-serif";
 	font-size: 62.5%;
+	background-image: url(img/background1.jpg);
+	background-position: center;
+	background-attachment: scroll;
 }
 /* Layout helpers
 ----------------------------------*/
-.ui-menu { 
-    width: 150px; 
-} 
+#inhalt {
+    text-align: center;
+    margin-bottom: 5px;
+    font-size: medium;
+}
+#center {
+    width:70%;
+    /*height:500px;          */
+    margin-bottom: 10px;
+    margin-top: 10px;
+    height: 500px;
+    background:#fc3;
+    position: relative;
+    left:50%;
+    margin-left:-35%;
+    border:3px solid #C0C0C0;
+    -webkit-border-radius: 10px;
+    -khtml-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    -webkit-box-shadow: 5px 5px 5px #858585;
+    -moz-box-shadow: 10px 10px 5px #858585;
+    box-shadow: 10px 10px 5px #858585;
+    overflow: scroll;
+    overflow-x: hidden;
+}
+.menue1 {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 2;
+}
+.ui-menu {
+    width: 150px;
+}
 .ui-helper-hidden {
 	display: none;
 }
@@ -493,7 +528,6 @@ button.ui-button::-moz-focus-inner {
 	font-weight: normal;
 	margin: -1px;
 }
-
 .ui-menu .ui-state-disabled {
 	font-weight: normal;
 	margin: .4em 0 .2em;
@@ -502,7 +536,6 @@ button.ui-button::-moz-focus-inner {
 .ui-menu .ui-state-disabled a {
 	cursor: default;
 }
-
 /* icon support */
 .ui-menu-icons {
 	position: relative;
@@ -511,7 +544,6 @@ button.ui-button::-moz-focus-inner {
 	position: relative;
 	padding-left: 2em;
 }
-
 /* left-aligned */
 .ui-menu .ui-icon {
 	position: absolute;
@@ -1178,4 +1210,87 @@ body .ui-tooltip {
 	opacity: .3;
 	filter: Alpha(Opacity=30);
 	border-radius: 8px;
+}
+
+
+
+
+
+/* SCROLBARS -----------------------------------------------------   */
+/* SCROLBARS -----------------------------------------------------   */
+/* SCROLBARS -----------------------------------------------------   */
+/* SCROLBARS -----------------------------------------------------   */
+/* SCROLBARS -----------------------------------------------------   */
+/* SCROLBARS -----------------------------------------------------   */
+
+.scroll-track{
+height:8px;
+width:10px;
+background-image: url('assets/VScrollTrackFill.png');
+background-repeat: repeat;
+}
+
+.scroll-handle{
+border: 0px
+height:10px;
+width:10px;
+background-image: url('assets/BlueVFill.png');
+background-repeat: repeat;
+cursor:pointer;
+}
+
+#scroll-track-top-2{
+height:10px;
+width:10px;
+background-image: url('assets/up.png');
+}
+
+#scroll-handle-bot-2{
+height:8px;
+width:10px;
+background-image: url('assets/bot.png');
+}
+
+#scroll-handle-top-2{
+height:8px;
+width:10px;
+background-image: url('assets/top.png');
+background-repeat: no-repeat;
+}
+
+#scroll-track-bot-2{
+height:10px;
+width:10px;
+background-image: url('assets/down.png');
+}
+
+.splitpane-divider {
+    border: 1px solid black;
+    background:#5B207B;
+    opacity: .5;
+    filter: alpha(opacity=50);
+}
+
+/* The classes/ids below are just used in this example. You can use whatever you like */
+#parent {
+    width: 100%;
+    background: #eeeeee;
+}
+
+.column {
+    float: left; /* This is forces the page content to adjust to changes in height of the columns */
+    overflow: hidden; /* As a precaution, all content is clipped to the column width */
+    margin: 0; /* This and padding need to be zero */
+    padding: 0;
+    z-index: 1;
+    background:#E7FECD;
+    color: #666666;
+    width: 33%; /* Default value, overridden by class */
+}
+
+/* Any spacing must be on a child of the column, not the column itself */
+.content {
+    border: 1px solid black;
+    margin: 5px;
+    padding: 5px;
 }
