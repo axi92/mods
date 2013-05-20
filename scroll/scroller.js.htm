@@ -1,0 +1,381 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+   <head>
+		<meta http-equiv="content-type" content="text/html;charset=UTF-8">
+	   <link href="/svn/templates/Standard/styles.css" rel="stylesheet" media="screen">
+      <script type="text/javascript" src="/svn/templates/Standard/collapse.js"></script>
+      <script type="text/javascript">
+         function checkCB(chBox)
+         {
+            count = 0
+            first = null
+            f = chBox.form
+            for (i = 0 ; i < f.elements.length ; i++)
+            if (f.elements[i].type == 'checkbox' && f.elements[i].checked)
+            {
+               if (first == null && f.elements[i] != chBox)
+                  first = f.elements[i]
+               count += 1
+            }
+            
+            if (count > 2) 
+            {
+               first.checked = false
+               count -= 1
+            }
+
+
+         }
+      </script>
+      <title>
+         WebSVN
+            - Projects
+               - Revision 12
+            - /trunk/scroller/scroller.js
+      </title>
+
+
+   </head>
+   <body>
+      <table width="100%" border="0">
+         <tr>
+            <td width="33%">&nbsp;</td>
+            <td width="33%" align="center"><h1>Subversion Server</h1></td>
+            <td width="33%"><div style="float: right"><form action="scroller.js?" method="post" id="langform"><select name="langchoice" onchange="javascript:this.form.submit();"><option value="Norwegian" >Norwegian</option><option value="Korean" >Korean</option><option value="Turkish" >Turkish</option><option value="Simplified Chinese" >Simplified Chinese</option><option value="Polish" >Polish</option><option value="Finnish" >Finnish</option><option value="Slovenian" >Slovenian</option><option value="Swedish" >Swedish</option><option value="German" selected>German</option><option value="English" >English</option><option value="Dansk" >Dansk</option><option value="Portuguese" >Portuguese</option><option value="Spanish" >Spanish</option><option value="Japanese" >Japanese</option><option value="Dutch" >Dutch</option><option value="Francais" >Francais</option><option value="Traditional Chinese" >Traditional Chinese</option><option value="Russian" >Russian</option></select><input type="submit" value="Los"></form></div></td>
+         </tr>
+      </table>
+
+      <hr>
+      <p>
+      
+<div align="right"><form action="/wsvn" method="post" id="projectform"><select name="repname" onchange="javascript:this.form.submit();"><option value="Projects" selected>Projects</option></select><input type="submit" value="Los" /><input type="hidden" name="selectproj" value="1" /><input type="hidden" name="op" value="form" /><input type="hidden" name="sc" value="0" /></form></div>
+<h2>Projects</h2>
+
+   [<a href="/wsvn/Projects/?rev=0&amp;sc=0">/]</a> [<a href="/wsvn/Projects/trunk/?rev=0&amp;sc=0">trunk/]</a> [<a href="/wsvn/Projects/trunk/scroller/?rev=0&amp;sc=0">scroller/]</a> [<b>scroller.js</b>] - Revision 12<p>
+   
+   <a href="/wsvn/Projects/trunk/scroller/scroller.js?op=diff&amp;rev=0&amp;sc=0">Vergleich mit vorheriger</a> - <a href="/wsvn/Projects/trunk/scroller/scroller.js?op=blame&amp;rev=0&amp;sc=0">Blame</a>
+   <p>
+   <table width="100%" border=0><tr><td>
+<code><PRE>
+</code><code><I><FONT COLOR="#B22222">/*
+</code><code>Class: Scroller
+</code><code>    Adds a scrollbar to a specific div. The scrollbar is implemented using a Script.aculo.us slider.
+</code><code>    The class reparents the original div, creates a slider and ties the reparented div to the slider,
+</code><code>    setting any properties necessary on the divs to make it all work. The scrollbar can be styled using
+</code><code>    CSS. The track of the scrollbar has class 'scroll-track', 'scroll-track-top' and 'scroll-track-bot',
+</code><code>    the thumb has class 'scroll-handle', 'scroll-handle-top' and 'scroll-handle-bot'.
+</code><code>    
+</code><code>properties:
+</code><code>    myIndex - an integer used to generate a unique ID for use in, for example, div ids.
+</code><code>    outerBox - the div that holds the scrollpane + scrollbar
+</code><code>    innerBox - the div that holds the scrollpane
+</code><code>    innerHeight - the height of the inner box.
+</code><code>    viewportHeight - the height of the view onto the scrolled div.
+</code><code>    track - a div that holds the script.aculo.us slider (the scrollbar)
+</code><code>    trackHeight - the height of the slider
+</code><code>    handle - the div for the 'thumb' of the scrollbar
+</code><code>    handleHeight - the height of the thumb
+</code><code>    slider - the script.aculo.us slider itself
+</code><code>    ieDecreaseBy - a fudge factor used when calculating the width of innerBox
+</code><code>    
+</code><code>*/</FONT></I>
+</code><code><B><FONT COLOR="#A020F0">var</FONT></B> Scroller = Class.create();
+</code><code>
+</code><code><I><FONT COLOR="#B22222">/*
+</code><code>property: Scroller.ids
+</code><code>    A cache of Scrollers indexed by the ID of the original div.
+</code><code> */</FONT></I>
+</code><code>Scroller.ids = <B><FONT COLOR="#A020F0">new</FONT></B> Object();
+</code><code>
+</code><code><I><FONT COLOR="#B22222">/*
+</code><code>property: Scroller.i
+</code><code>    A unique ID generator.
+</code><code> */</FONT></I>
+</code><code>Scroller.i = 0;
+</code><code>
+</code><code>Scroller.prototype = {
+</code><code>    <I><FONT COLOR="#B22222">/*
+</code><code>    constructor: initialize 
+</code><code>        Wrap the passed div in a scrollpane.
+</code><code>    
+</code><code>    parameters: 
+</code><code>        el - the div to add a scrollbar to.
+</code><code>     */</FONT></I>
+</code><code>  initialize: <B><FONT COLOR="#A020F0">function</FONT></B>(el) {
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.outerBox = el;
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.decorate();
+</code><code>  },
+</code><code>  
+</code><code>  <I><FONT COLOR="#B22222">/*
+</code><code>  function: decorate  
+</code><code>    create the necessary elements to implement the scrollbar and wire up events.
+</code><code>   */</FONT></I>
+</code><code>  decorate: <B><FONT COLOR="#A020F0">function</FONT></B>() {
+</code><code>    $(<B><FONT COLOR="#A020F0">this</FONT></B>.outerBox).makePositioned(); <I><FONT COLOR="#B22222">// Fix IE
+</code><code></FONT></I>    
+</code><code>    <I><FONT COLOR="#B22222">// Seed a unique ID
+</code><code></FONT></I>    Scroller.i = Scroller.i + 1;
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.myIndex = Scroller.i;
+</code><code>    
+</code><code>    <I><FONT COLOR="#B22222">//wrap the existing content in an intermediate inner box
+</code><code></FONT></I>    <B><FONT COLOR="#A020F0">this</FONT></B>.innerBox = document.createElement(<B><FONT COLOR="#BC8F8F">&quot;DIV&quot;</FONT></B>);
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.innerBox.className=<B><FONT COLOR="#BC8F8F">&quot;scroll-innerBox&quot;</FONT></B>;
+</code><code>    $(<B><FONT COLOR="#A020F0">this</FONT></B>.innerBox).makePositioned();  <I><FONT COLOR="#B22222">// Fix IE
+</code><code></FONT></I>    <B><FONT COLOR="#A020F0">this</FONT></B>.innerBox.style.cssFloat=<B><FONT COLOR="#A020F0">this</FONT></B>.innerBox.style.styleFloat=<B><FONT COLOR="#BC8F8F">'left'</FONT></B>; <I><FONT COLOR="#B22222">// Need the scrollbar to appear next to the scrollpane
+</code><code></FONT></I>    <B><FONT COLOR="#A020F0">this</FONT></B>.innerBox.id=<B><FONT COLOR="#BC8F8F">&quot;scroll-innerBox-&quot;</FONT></B>+Scroller.i;
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.innerBox.style.top = <B><FONT COLOR="#BC8F8F">&quot;0px&quot;</FONT></B>;
+</code><code>    
+</code><code>    <I><FONT COLOR="#B22222">//Transfer the contents of Outer Box to Inner Box
+</code><code></FONT></I>    <B><FONT COLOR="#A020F0">while</FONT></B> (<B><FONT COLOR="#A020F0">this</FONT></B>.outerBox.hasChildNodes()) {
+</code><code>        <B><FONT COLOR="#A020F0">this</FONT></B>.innerBox.appendChild(<B><FONT COLOR="#A020F0">this</FONT></B>.outerBox.firstChild);
+</code><code>    }
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.innerBox.style.overflow=<B><FONT COLOR="#BC8F8F">&quot;hidden&quot;</FONT></B>;
+</code><code>    <I><FONT COLOR="#B22222">//turn off scrolling on the outer div
+</code><code></FONT></I>    <B><FONT COLOR="#A020F0">this</FONT></B>.outerBox.style.overflow=<B><FONT COLOR="#BC8F8F">&quot;hidden&quot;</FONT></B>;
+</code><code>
+</code><code>    <I><FONT COLOR="#B22222">// create a track
+</code><code></FONT></I>    <B><FONT COLOR="#A020F0">this</FONT></B>.track=document.createElement(<B><FONT COLOR="#BC8F8F">'div'</FONT></B>);
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.track.className=<B><FONT COLOR="#BC8F8F">&quot;scroll-track&quot;</FONT></B>;
+</code><code>    $(<B><FONT COLOR="#A020F0">this</FONT></B>.track).makePositioned();
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.track.style.cssFloat=<B><FONT COLOR="#A020F0">this</FONT></B>.track.style.styleFloat=<B><FONT COLOR="#BC8F8F">'left'</FONT></B>;
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.track.id=<B><FONT COLOR="#BC8F8F">&quot;scroll-track-&quot;</FONT></B>+Scroller.i;
+</code><code>    <I><FONT COLOR="#B22222">// Fix IE line-height bug. Sigh.
+</code><code></FONT></I>    <B><FONT COLOR="#A020F0">this</FONT></B>.track.appendChild(document.createComment(<B><FONT COLOR="#BC8F8F">''</FONT></B>));
+</code><code>
+</code><code>    <I><FONT COLOR="#B22222">// Create the top button
+</code><code></FONT></I>    <B><FONT COLOR="#A020F0">this</FONT></B>.tracktop=document.createElement(<B><FONT COLOR="#BC8F8F">'div'</FONT></B>);
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.tracktop.className=<B><FONT COLOR="#BC8F8F">&quot;scroll-track-top&quot;</FONT></B>;
+</code><code>    $(<B><FONT COLOR="#A020F0">this</FONT></B>.tracktop).makePositioned();
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.tracktop.style.cssFloat=<B><FONT COLOR="#A020F0">this</FONT></B>.tracktop.style.styleFloat=<B><FONT COLOR="#BC8F8F">'left'</FONT></B>;
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.tracktop.id=<B><FONT COLOR="#BC8F8F">&quot;scroll-track-top-&quot;</FONT></B>+Scroller.i;
+</code><code>    <I><FONT COLOR="#B22222">// Fix IE line-height bug. Sigh.
+</code><code></FONT></I>    <B><FONT COLOR="#A020F0">this</FONT></B>.tracktop.appendChild(document.createComment(<B><FONT COLOR="#BC8F8F">''</FONT></B>));
+</code><code>    
+</code><code>    <I><FONT COLOR="#B22222">// Create the bottom button
+</code><code></FONT></I>    <B><FONT COLOR="#A020F0">this</FONT></B>.trackbot=document.createElement(<B><FONT COLOR="#BC8F8F">'div'</FONT></B>);
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.trackbot.className=<B><FONT COLOR="#BC8F8F">&quot;scroll-track-bot&quot;</FONT></B>;
+</code><code>    $(<B><FONT COLOR="#A020F0">this</FONT></B>.trackbot).makePositioned();
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.trackbot.style.cssFloat=<B><FONT COLOR="#A020F0">this</FONT></B>.trackbot.style.styleFloat=<B><FONT COLOR="#BC8F8F">'left'</FONT></B>;
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.trackbot.id=<B><FONT COLOR="#BC8F8F">&quot;scroll-track-bot-&quot;</FONT></B>+Scroller.i;
+</code><code>    <I><FONT COLOR="#B22222">// Fix IE line-height bug. Sigh.
+</code><code></FONT></I>    <B><FONT COLOR="#A020F0">this</FONT></B>.trackbot.appendChild(document.createComment(<B><FONT COLOR="#BC8F8F">''</FONT></B>));
+</code><code>
+</code><code>    <I><FONT COLOR="#B22222">// Create the handle
+</code><code></FONT></I>    <B><FONT COLOR="#A020F0">this</FONT></B>.handle=document.createElement(<B><FONT COLOR="#BC8F8F">'div'</FONT></B>);
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.handle.className=<B><FONT COLOR="#BC8F8F">&quot;scroll-handle-container&quot;</FONT></B>;
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.handle.id=<B><FONT COLOR="#BC8F8F">&quot;scroll-handle-container&quot;</FONT></B>+Scroller.i;
+</code><code>
+</code><code>    <I><FONT COLOR="#B22222">// Create the handle middle
+</code><code></FONT></I>    <B><FONT COLOR="#A020F0">this</FONT></B>.handle_middle=document.createElement(<B><FONT COLOR="#BC8F8F">'div'</FONT></B>);
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.handle_middle.className=<B><FONT COLOR="#BC8F8F">&quot;scroll-handle&quot;</FONT></B>;
+</code><code>    $(<B><FONT COLOR="#A020F0">this</FONT></B>.handle_middle).makePositioned();
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.handle_middle.id=<B><FONT COLOR="#BC8F8F">&quot;scroll-handle-&quot;</FONT></B>+Scroller.i;
+</code><code>    <I><FONT COLOR="#B22222">// Fix IE line-height bug. Sigh.
+</code><code></FONT></I>    <B><FONT COLOR="#A020F0">this</FONT></B>.handle_middle.appendChild(document.createComment(<B><FONT COLOR="#BC8F8F">''</FONT></B>));
+</code><code>
+</code><code>    <I><FONT COLOR="#B22222">// Create the handle top cap
+</code><code></FONT></I>    <B><FONT COLOR="#A020F0">this</FONT></B>.handletop=document.createElement(<B><FONT COLOR="#BC8F8F">'div'</FONT></B>);
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.handletop.className=<B><FONT COLOR="#BC8F8F">&quot;scroll-handle-top&quot;</FONT></B>;
+</code><code>    $(<B><FONT COLOR="#A020F0">this</FONT></B>.handletop).makePositioned();
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.handletop.id=<B><FONT COLOR="#BC8F8F">&quot;scroll-handle-top-&quot;</FONT></B>+Scroller.i;
+</code><code>    <I><FONT COLOR="#B22222">// Fix IE line-height bug. Sigh.
+</code><code></FONT></I>    <B><FONT COLOR="#A020F0">this</FONT></B>.handletop.appendChild(document.createComment(<B><FONT COLOR="#BC8F8F">''</FONT></B>));
+</code><code>
+</code><code>    <I><FONT COLOR="#B22222">// Create the handle bottom cap
+</code><code></FONT></I>    <B><FONT COLOR="#A020F0">this</FONT></B>.handlebot=document.createElement(<B><FONT COLOR="#BC8F8F">'div'</FONT></B>);
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.handlebot.className=<B><FONT COLOR="#BC8F8F">&quot;scroll-handle-bot&quot;</FONT></B>;
+</code><code>    $(<B><FONT COLOR="#A020F0">this</FONT></B>.handlebot).makePositioned();
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.handlebot.id=<B><FONT COLOR="#BC8F8F">&quot;scroll-handle-bot-&quot;</FONT></B>+Scroller.i;
+</code><code>    <I><FONT COLOR="#B22222">// Fix IE line-height bug. Sigh.
+</code><code></FONT></I>    <B><FONT COLOR="#A020F0">this</FONT></B>.handlebot.appendChild(document.createComment(<B><FONT COLOR="#BC8F8F">''</FONT></B>));
+</code><code>
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.track.hide();
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.tracktop.hide();
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.trackbot.hide();
+</code><code>
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.outerBox.appendChild(<B><FONT COLOR="#A020F0">this</FONT></B>.innerBox);
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.outerBox.appendChild(<B><FONT COLOR="#A020F0">this</FONT></B>.tracktop);
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.handle.appendChild(<B><FONT COLOR="#A020F0">this</FONT></B>.handletop);
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.handle.appendChild(<B><FONT COLOR="#A020F0">this</FONT></B>.handle_middle);
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.handle.appendChild(<B><FONT COLOR="#A020F0">this</FONT></B>.handlebot);
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.track.appendChild(<B><FONT COLOR="#A020F0">this</FONT></B>.handle);
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.outerBox.appendChild(<B><FONT COLOR="#A020F0">this</FONT></B>.track);
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.outerBox.appendChild(<B><FONT COLOR="#A020F0">this</FONT></B>.trackbot);
+</code><code>
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.slider = <B><FONT COLOR="#A020F0">new</FONT></B> Control.Slider($(<B><FONT COLOR="#A020F0">this</FONT></B>.handle).id, $(<B><FONT COLOR="#A020F0">this</FONT></B>.track).id, {axis:<B><FONT COLOR="#BC8F8F">'vertical'</FONT></B>,
+</code><code>                                     minimum: 0,
+</code><code>                                     maximum: $(<B><FONT COLOR="#A020F0">this</FONT></B>.outerBox).clientHeight});
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.slider.options.onSlide = <B><FONT COLOR="#A020F0">this</FONT></B>.slider.options.onChange = <B><FONT COLOR="#A020F0">this</FONT></B>.onChange.bind(<B><FONT COLOR="#A020F0">this</FONT></B>);
+</code><code>    setTimeout(<B><FONT COLOR="#A020F0">this</FONT></B>.resetScrollbar.bind(<B><FONT COLOR="#A020F0">this</FONT></B>, <B><FONT COLOR="#A020F0">false</FONT></B>), 10);
+</code><code>
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.domMouseCB = <B><FONT COLOR="#A020F0">this</FONT></B>.MouseWheelEvent.bindAsEventListener(<B><FONT COLOR="#A020F0">this</FONT></B>, <B><FONT COLOR="#A020F0">this</FONT></B>.slider);
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.mouseWheelCB = <B><FONT COLOR="#A020F0">this</FONT></B>.MouseWheelEvent.bindAsEventListener(<B><FONT COLOR="#A020F0">this</FONT></B>, <B><FONT COLOR="#A020F0">this</FONT></B>.slider);
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.trackTopCB = <B><FONT COLOR="#A020F0">this</FONT></B>.tracktopEvent.bindAsEventListener(<B><FONT COLOR="#A020F0">this</FONT></B>, <B><FONT COLOR="#A020F0">this</FONT></B>.slider);
+</code><code>    <B><FONT COLOR="#A020F0">this</FONT></B>.trackBotCB = <B><FONT COLOR="#A020F0">this</FONT></B>.trackbotEvent.bindAsEventListener(<B><FONT COLOR="#A020F0">this</FONT></B>, <B><FONT COLOR="#A020F0">this</FONT></B>.slider);
+</code><code>    
+</code><code>    <I><FONT COLOR="#B22222">//Events control
+</code><code></FONT></I>    $(<B><FONT COLOR="#A020F0">this</FONT></B>.outerBox).observe(<B><FONT COLOR="#BC8F8F">'DOMMouseScroll'</FONT></B>, <B><FONT COLOR="#A020F0">this</FONT></B>.domMouseCB); <I><FONT COLOR="#B22222">// Mozilla
+</code><code></FONT></I>    $(<B><FONT COLOR="#A020F0">this</FONT></B>.outerBox).observe(<B><FONT COLOR="#BC8F8F">'mousewheel'</FONT></B>, <B><FONT COLOR="#A020F0">this</FONT></B>.mouseWheelCB);<I><FONT COLOR="#B22222">// IE/Opera
+</code><code></FONT></I>    $(<B><FONT COLOR="#A020F0">this</FONT></B>.tracktop).observe(<B><FONT COLOR="#BC8F8F">'mousedown'</FONT></B>, <B><FONT COLOR="#A020F0">this</FONT></B>.trackTopCB);
+</code><code>    $(<B><FONT COLOR="#A020F0">this</FONT></B>.trackbot).observe(<B><FONT COLOR="#BC8F8F">'mousedown'</FONT></B>, <B><FONT COLOR="#A020F0">this</FONT></B>.trackBotCB);
+</code><code>  },
+</code><code>  
+</code><code>  release: <B><FONT COLOR="#A020F0">function</FONT></B>() {
+</code><code>    $(<B><FONT COLOR="#A020F0">this</FONT></B>.outerBox).stopObserving(<B><FONT COLOR="#BC8F8F">'DOMMouseScroll'</FONT></B>, <B><FONT COLOR="#A020F0">this</FONT></B>.domMouseCB);
+</code><code>    $(<B><FONT COLOR="#A020F0">this</FONT></B>.outerBox).stopObserving(<B><FONT COLOR="#BC8F8F">'mousewheel'</FONT></B>, <B><FONT COLOR="#A020F0">this</FONT></B>.mouseWheelCB);<I><FONT COLOR="#B22222">// IE/Opera
+</code><code></FONT></I>    $(<B><FONT COLOR="#A020F0">this</FONT></B>.tracktop).stopObserving(<B><FONT COLOR="#BC8F8F">'mousedown'</FONT></B>, <B><FONT COLOR="#A020F0">this</FONT></B>.trackTopCB);
+</code><code>    $(<B><FONT COLOR="#A020F0">this</FONT></B>.trackbot).stopObserving(<B><FONT COLOR="#BC8F8F">'mousedown'</FONT></B>, <B><FONT COLOR="#A020F0">this</FONT></B>.trackBotCB);
+</code><code>  },
+</code><code>  
+</code><code>  <I><FONT COLOR="#B22222">/*
+</code><code>  function: resetScrollbar  
+</code><code>    Re-calculate the geometry of the scrollbar. Typically called from an event handler.
+</code><code>    
+</code><code>    args:   
+</code><code>        repeat - if true, set timer to re-calculate to fix IE bug on resize window.
+</code><code>   */</FONT></I>
+</code><code>  resetScrollbar: <B><FONT COLOR="#A020F0">function</FONT></B>(repeat) {
+</code><code>        <B><FONT COLOR="#A020F0">this</FONT></B>.track.hide();
+</code><code>        <B><FONT COLOR="#A020F0">this</FONT></B>.tracktop.hide();
+</code><code>        <B><FONT COLOR="#A020F0">this</FONT></B>.trackbot.hide();
+</code><code>        <B><FONT COLOR="#A020F0">this</FONT></B>.enableScroll = <B><FONT COLOR="#A020F0">false</FONT></B>;
+</code><code>        <B><FONT COLOR="#A020F0">this</FONT></B>.innerHeight = $(<B><FONT COLOR="#A020F0">this</FONT></B>.outerBox).clientHeight;
+</code><code>        <B><FONT COLOR="#A020F0">this</FONT></B>.innerBox.style.height = <B><FONT COLOR="#A020F0">this</FONT></B>.innerHeight + <B><FONT COLOR="#BC8F8F">&quot;px&quot;</FONT></B>;
+</code><code>        <B><FONT COLOR="#A020F0">var</FONT></B> newWidth = $(<B><FONT COLOR="#A020F0">this</FONT></B>.outerBox).clientWidth;
+</code><code>
+</code><code>        <B><FONT COLOR="#A020F0">var</FONT></B> tth = Element.getStyle(<B><FONT COLOR="#A020F0">this</FONT></B>.tracktop,<B><FONT COLOR="#BC8F8F">&quot;height&quot;</FONT></B>);
+</code><code>        <B><FONT COLOR="#A020F0">if</FONT></B> (tth)
+</code><code>           tth = tth.replace(<B><FONT COLOR="#BC8F8F">&quot;px&quot;</FONT></B>,<B><FONT COLOR="#BC8F8F">&quot;&quot;</FONT></B>);
+</code><code>        <B><FONT COLOR="#A020F0">else</FONT></B>
+</code><code>           tth = 0;
+</code><code>    
+</code><code>        <B><FONT COLOR="#A020F0">var</FONT></B> hth = Element.getStyle(<B><FONT COLOR="#A020F0">this</FONT></B>.handletop,<B><FONT COLOR="#BC8F8F">&quot;height&quot;</FONT></B>);
+</code><code>        <B><FONT COLOR="#A020F0">if</FONT></B> (hth)
+</code><code>           hth = hth.replace(<B><FONT COLOR="#BC8F8F">&quot;px&quot;</FONT></B>,<B><FONT COLOR="#BC8F8F">&quot;&quot;</FONT></B>);
+</code><code>        <B><FONT COLOR="#A020F0">else</FONT></B>
+</code><code>           hth = 0;
+</code><code>    
+</code><code>        <B><FONT COLOR="#A020F0">if</FONT></B> (<B><FONT COLOR="#A020F0">this</FONT></B>.innerHeight &lt; <B><FONT COLOR="#A020F0">this</FONT></B>.innerBox.scrollHeight) {
+</code><code>            <B><FONT COLOR="#A020F0">this</FONT></B>.viewportHeight = <B><FONT COLOR="#A020F0">this</FONT></B>.innerHeight - tth*2;
+</code><code>            <B><FONT COLOR="#A020F0">this</FONT></B>.slider.trackLength = <B><FONT COLOR="#A020F0">this</FONT></B>.viewportHeight;
+</code><code>            <B><FONT COLOR="#A020F0">this</FONT></B>.track.style.height = <B><FONT COLOR="#A020F0">this</FONT></B>.viewportHeight + <B><FONT COLOR="#BC8F8F">&quot;px&quot;</FONT></B>;       
+</code><code>            <B><FONT COLOR="#A020F0">this</FONT></B>.handleHeight = <B><FONT COLOR="#DA70D6">Math</FONT></B>.round(<B><FONT COLOR="#A020F0">this</FONT></B>.viewportHeight * <B><FONT COLOR="#A020F0">this</FONT></B>.innerHeight / <B><FONT COLOR="#A020F0">this</FONT></B>.innerBox.scrollHeight);    
+</code><code>            <B><FONT COLOR="#A020F0">if</FONT></B>(<B><FONT COLOR="#A020F0">this</FONT></B>.handleHeight &lt; (hth*2))
+</code><code>                <B><FONT COLOR="#A020F0">this</FONT></B>.handleHeight = (hth*2);
+</code><code>            <B><FONT COLOR="#A020F0">if</FONT></B> (<B><FONT COLOR="#A020F0">this</FONT></B>.handleHeight &lt; 10)
+</code><code>                 <B><FONT COLOR="#A020F0">this</FONT></B>.handleHeight = 10;
+</code><code>            <B><FONT COLOR="#A020F0">this</FONT></B>.handle.style.height = <B><FONT COLOR="#A020F0">this</FONT></B>.handleHeight + <B><FONT COLOR="#BC8F8F">&quot;px&quot;</FONT></B>;
+</code><code>            <B><FONT COLOR="#A020F0">this</FONT></B>.handle_middle.style.height = <B><FONT COLOR="#A020F0">this</FONT></B>.handleHeight - hth*2 + <B><FONT COLOR="#BC8F8F">&quot;px&quot;</FONT></B>;
+</code><code>            <B><FONT COLOR="#A020F0">this</FONT></B>.handletop.style.height = hth + <B><FONT COLOR="#BC8F8F">&quot;px&quot;</FONT></B>;
+</code><code>            <B><FONT COLOR="#A020F0">this</FONT></B>.slider.handleLength = <B><FONT COLOR="#A020F0">this</FONT></B>.handleHeight;
+</code><code>            <B><FONT COLOR="#A020F0">this</FONT></B>.track.style.display = <B><FONT COLOR="#BC8F8F">'inline'</FONT></B>;
+</code><code>            <B><FONT COLOR="#A020F0">this</FONT></B>.tracktop.style.display = <B><FONT COLOR="#BC8F8F">'inline'</FONT></B>;
+</code><code>            <B><FONT COLOR="#A020F0">this</FONT></B>.trackbot.style.display = <B><FONT COLOR="#BC8F8F">'inline'</FONT></B>;
+</code><code>            <B><FONT COLOR="#A020F0">this</FONT></B>.ieDecreaseBy = 1;   <I><FONT COLOR="#B22222">// Firefox seems to have an off-by one error, so allow for it.
+</code><code></FONT></I>            <B><FONT COLOR="#A020F0">if</FONT></B> (<B><FONT COLOR="#A020F0">this</FONT></B>.outerBox.currentStyle) {
+</code><code>                <B><FONT COLOR="#A020F0">var</FONT></B> borderWidth = <B><FONT COLOR="#A020F0">this</FONT></B>.outerBox.currentStyle[<B><FONT COLOR="#BC8F8F">&quot;borderWidth&quot;</FONT></B>].replace(<B><FONT COLOR="#BC8F8F">&quot;px&quot;</FONT></B>,<B><FONT COLOR="#BC8F8F">&quot;&quot;</FONT></B>);
+</code><code>                <B><FONT COLOR="#A020F0">if</FONT></B>(!isNaN(borderWidth)) {
+</code><code>                    <B><FONT COLOR="#A020F0">this</FONT></B>.ieDecreaseBy = (borderWidth) * 2;
+</code><code>                }
+</code><code>            }
+</code><code>            newWidth = ($(<B><FONT COLOR="#A020F0">this</FONT></B>.outerBox).clientWidth - $(<B><FONT COLOR="#A020F0">this</FONT></B>.track).clientWidth - <B><FONT COLOR="#A020F0">this</FONT></B>.ieDecreaseBy);
+</code><code>            <B><FONT COLOR="#A020F0">this</FONT></B>.enableScroll = <B><FONT COLOR="#A020F0">true</FONT></B>;
+</code><code>        }
+</code><code>        <I><FONT COLOR="#B22222">//Set the width of of the scrollpane (aka innerBox).
+</code><code></FONT></I>        <B><FONT COLOR="#A020F0">this</FONT></B>.innerBox.style.width = newWidth + <B><FONT COLOR="#BC8F8F">&quot;px&quot;</FONT></B>;
+</code><code>        <I><FONT COLOR="#B22222">//Fix IE resize event Bug 
+</code><code></FONT></I>        <B><FONT COLOR="#A020F0">if</FONT></B>(repeat) {
+</code><code>            setTimeout(<B><FONT COLOR="#A020F0">this</FONT></B>.resetScrollbar.bind(<B><FONT COLOR="#A020F0">this</FONT></B>, <B><FONT COLOR="#A020F0">false</FONT></B>), 10);
+</code><code>        }
+</code><code>  },
+</code><code>  
+</code><code>    <I><FONT COLOR="#B22222">//Mouse wheel code from http://adomas.org/javascript-mouse-wheel/
+</code><code></FONT></I>    MouseWheelEvent: <B><FONT COLOR="#A020F0">function</FONT></B>(event, slider) {
+</code><code>        <B><FONT COLOR="#A020F0">var</FONT></B> delta = 0;
+</code><code>        <B><FONT COLOR="#A020F0">if</FONT></B> (!event) <I><FONT COLOR="#B22222">//For IE.
+</code><code></FONT></I>            event = window.event;
+</code><code>        <B><FONT COLOR="#A020F0">if</FONT></B> (event.wheelDelta) { <I><FONT COLOR="#B22222">//IE/Opera.
+</code><code></FONT></I>            delta = event.wheelDelta / 120;
+</code><code>            <I><FONT COLOR="#B22222">/*if (window.opera) //In Opera 9, delta differs in sign as compared to IE
+</code><code>                delta = -delta;   But it isn't necessary with Opera v9.51*/</FONT></I>
+</code><code>        } <B><FONT COLOR="#A020F0">else</FONT></B> <B><FONT COLOR="#A020F0">if</FONT></B> (event.detail) { <I><FONT COLOR="#B22222">//Mozilla case
+</code><code></FONT></I>            delta = -event.detail / 3;
+</code><code>        }
+</code><code>        <B><FONT COLOR="#A020F0">if</FONT></B> (delta)
+</code><code>            slider.setValueBy(-delta / 10);
+</code><code>        Event.stop(event);
+</code><code>    },
+</code><code>
+</code><code>    trackbotEvent: <B><FONT COLOR="#A020F0">function</FONT></B>(event, slider) {
+</code><code>        <B><FONT COLOR="#A020F0">if</FONT></B> (Event.isLeftClick(event)) { 
+</code><code>            slider.setValueBy(0.2);
+</code><code>            Event.stop(event);
+</code><code>        }
+</code><code>    },
+</code><code>
+</code><code>    tracktopEvent: <B><FONT COLOR="#A020F0">function</FONT></B>(event, slider) {
+</code><code>        <B><FONT COLOR="#A020F0">if</FONT></B> (Event.isLeftClick(event)) {
+</code><code>            slider.setValueBy(-0.2);
+</code><code>            Event.stop(event);
+</code><code>        }
+</code><code>    },
+</code><code>
+</code><code>  <I><FONT COLOR="#B22222">/*
+</code><code>  function: onChange  
+</code><code>    Called when the script.aculo.us slider has changed (i.e. when it has been dragged). Scroll the inner box.
+</code><code>    
+</code><code>    args:   
+</code><code>        val - not used.
+</code><code>   */</FONT></I>
+</code><code>    onChange: <B><FONT COLOR="#A020F0">function</FONT></B>(val) {
+</code><code>        <B><FONT COLOR="#A020F0">if</FONT></B>(<B><FONT COLOR="#A020F0">this</FONT></B>.enableScroll)
+</code><code>            <B><FONT COLOR="#A020F0">this</FONT></B>.innerBox.scrollTop = <B><FONT COLOR="#DA70D6">Math</FONT></B>.round (val * (<B><FONT COLOR="#A020F0">this</FONT></B>.innerBox.scrollHeight-<B><FONT COLOR="#A020F0">this</FONT></B>.innerBox.offsetHeight));
+</code><code>    }
+</code><code>}
+</code><code>
+</code><code><I><FONT COLOR="#B22222">/*
+</code><code>function: Scroller.setAll
+</code><code>    Search for divs of the class 'makeScroll' and wrap them in a Scroller.
+</code><code> */</FONT></I>
+</code><code>Scroller.setAll = <B><FONT COLOR="#A020F0">function</FONT></B> () {
+</code><code>    $$(<B><FONT COLOR="#BC8F8F">'.makeScroll'</FONT></B>).each(<B><FONT COLOR="#A020F0">function</FONT></B>(item) {
+</code><code>        Scroller.ids[item.id] = <B><FONT COLOR="#A020F0">new</FONT></B> Scroller(item);
+</code><code>    });
+</code><code>}
+</code><code>
+</code><code><I><FONT COLOR="#B22222">/*
+</code><code>function: Scroller.reset
+</code><code>    If the passed element has class 'makeScroll', wrap it in a Scroller.
+</code><code> */</FONT></I>
+</code><code>Scroller.reset = <B><FONT COLOR="#A020F0">function</FONT></B> (body_id) {
+</code><code>    <B><FONT COLOR="#A020F0">if</FONT></B> ($(body_id).className.match(<B><FONT COLOR="#A020F0">new</FONT></B> RegExp(<B><FONT COLOR="#BC8F8F">&quot;(^|\\s)makeScroll(\\s|$)&quot;</FONT></B>))) {
+</code><code>       <B><FONT COLOR="#A020F0">if</FONT></B> (Scroller.ids[body_id])
+</code><code>           Scroller.ids[body_id].release();
+</code><code>           
+</code><code>        Scroller.ids[body_id] = <B><FONT COLOR="#A020F0">new</FONT></B> Scroller($(body_id));
+</code><code>    }
+</code><code>}
+</code><code>
+</code><code><I><FONT COLOR="#B22222">/*
+</code><code>property: Scroller.updateAll
+</code><code>    Reset all of the scrollbars.
+</code><code> */</FONT></I>
+</code><code>Scroller.updateAll = <B><FONT COLOR="#A020F0">function</FONT></B> () {
+</code><code>    $H(Scroller.ids).each(<B><FONT COLOR="#A020F0">function</FONT></B>(pair) {
+</code><code>        Scroller.ids[pair.key].resetScrollbar(<B><FONT COLOR="#A020F0">true</FONT></B>);
+</code><code>    });
+</code><code>}
+</code><code>
+</code><code><I><FONT COLOR="#B22222">/*
+</code><code>    Hook up some global event handlers.
+</code><code> */</FONT></I>
+</code><code>Event.observe(window, <B><FONT COLOR="#BC8F8F">&quot;load&quot;</FONT></B>, Scroller.setAll);
+</code><code>Event.observe(window, <B><FONT COLOR="#BC8F8F">&quot;resize&quot;</FONT></B>, Scroller.updateAll);</PRE>
+</code><code><HR>
+</code><code><ADDRESS>Generated by <A HREF="http://www.iki.fi/~mtr/genscript/">GNU enscript 1.6.4</A>.</ADDRESS>
+</code><code></BODY>
+</code><code></HTML>
+</code><code></code>   </td></tr></table>
+      <p><center><font size="-1"><i><b>Powered by <a href="http://websvn.tigris.org/">WebSVN</a> v2.0rc4</b></i></font></center>
+   </body>
+</html>
