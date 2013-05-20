@@ -7,6 +7,9 @@
         <meta name="author" content="">
         <meta name="keywords" content="">
         <link rel="stylesheet" href="style.css" />
+        <!-- <script src="js/prototype.js" type="text/javascript"></script>
+        <script src="js/slider.js" type="text/javascript"></script>
+        <script src="js/scroller.js" type="text/javascript"></script>     -->
         <script src="js/jquery-1.9.1.js"></script>
         <script src="js/jquery-ui.js"></script>
         <link rel="stylesheet" href="style.css" />
@@ -65,8 +68,8 @@
                 </ul>
             </li>
         </ul>
-        <div class="center">
-            <div class="inhalt">
+        <div class="makeScroll" id="center">
+            <div class="makeScroll" id="inhalt">
 <?php
 error_reporting(0);
 if ($_GET["page"] == 'cops')
